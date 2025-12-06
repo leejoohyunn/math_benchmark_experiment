@@ -1,0 +1,189 @@
+# Math Reasoning Benchmark Configuration
+
+# Experiment Settings
+experiment:
+  name: "math_reasoning_benchmark"
+  seed: 42
+  device: "cuda"  # cuda or cpu
+  batch_size: 1
+  max_new_tokens: 512
+  use_cache: true
+
+# Model Configurations
+models:
+  # GPT-4o-mini (API)
+  gpt-4o-mini:
+    type: "api"
+    model_name: "gpt-4o-mini"
+    temperature: 0.5
+    max_tokens: 512
+    top_p: 1.0
+
+  # Llama-3.1-8B
+  llama-3.1-8b-base:
+    type: "huggingface"
+    model_id: "meta-llama/Llama-3.1-8B"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  llama-3.1-8b-instruct:
+    type: "huggingface"
+    model_id: "meta-llama/Llama-3.1-8B-Instruct"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  # Llama-4 Scout
+  llama-4-scout-17b-16e-base:
+    type: "huggingface"
+    model_id: "meta-llama/Llama-4-Scout-17B-16E"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  llama-4-scout-17b-16e-instruct:
+    type: "huggingface"
+    model_id: "meta-llama/Llama-4-Scout-17B-16E-Instruct"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  # Llama-4 Maverick
+  llama-4-maverick-17b-128e-base:
+    type: "huggingface"
+    model_id: "meta-llama/Llama-4-Maverick-17B-128E"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  llama-4-maverick-17b-128e-instruct:
+    type: "huggingface"
+    model_id: "meta-llama/Llama-4-Maverick-17B-128E-Instruct"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  # Qwen-2.5-7B
+  qwen-2.5-7b-base:
+    type: "huggingface"
+    model_id: "Qwen/Qwen2.5-7B"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  qwen-2.5-7b-instruct:
+    type: "huggingface"
+    model_id: "Qwen/Qwen2.5-7B-Instruct"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  # Qwen-2.5-Math-7B
+  qwen-2.5-math-7b-base:
+    type: "huggingface"
+    model_id: "Qwen/Qwen2.5-Math-7B"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  qwen-2.5-math-7b-instruct:
+    type: "huggingface"
+    model_id: "Qwen/Qwen2.5-Math-7B-Instruct"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  # Qwen-3-4B
+  qwen-3-4b-base:
+    type: "huggingface"
+    model_id: "Qwen/Qwen3-4B"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  qwen-3-4b-instruct:
+    type: "huggingface"
+    model_id: "Qwen/Qwen3-4B-Instruct-2507"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+  qwen-3-4b-thinking:
+    type: "huggingface"
+    model_id: "Qwen/Qwen3-4B-Thinking-2507"
+    dtype: "float16"
+    load_in_8bit: false
+    device_map: "auto"
+
+# Dataset Configurations
+datasets:
+  gsm8k:
+    name: "gsm8k"
+    hf_dataset: "openai/gsm8k"
+    hf_config: "main"  # Config name for GSM8K
+    split: "test"
+    sample_size: null  # null for full dataset, or specify number
+
+  math-500:
+    name: "math-500"
+    hf_dataset: "hendrycks/competition_math"
+    split: "test"
+    sample_size: 500
+
+  aime-25:
+    name: "aime-25"
+    hf_dataset: "AI-MO/aimo-validation-aime"
+    split: "train"
+    sample_size: 25
+
+  omni-math:
+    name: "omni-math"
+    hf_dataset: "KbsdJames/Omni-MATH"
+    split: "test"
+    sample_size: null
+
+# Prompt Templates
+prompts:
+  base_models:
+    template: "Question: {question}\n\nAnswer:"
+
+  instruct_models:
+    template: |
+      You are a helpful math tutor. Solve the following math problem step by step.
+
+      Problem: {question}
+
+      Solution:
+
+  thinking_models:
+    template: |
+      Solve the following math problem. Show your reasoning process.
+
+      Problem: {question}
+
+      Let's think step by step:
+
+# Evaluation Settings
+evaluation:
+  answer_extraction:
+    pattern: "\\boxed{(.+?)}"  # LaTeX boxed answer
+    fallback_patterns:
+      - "answer is (.+?)\\."
+      - "= (.+?)$"
+
+  metrics:
+    - "accuracy"
+    - "latency"
+    - "token_usage"
+
+  save_predictions: true
+  save_errors: true
+
+# Output Settings
+output:
+  results_dir: "results"
+  raw_dir: "results/raw"
+  processed_dir: "results/processed"
+  visualizations_dir: "results/visualizations"
+  log_file: "experiment.log"
